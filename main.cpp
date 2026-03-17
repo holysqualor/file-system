@@ -1,14 +1,14 @@
 #include <iostream>
 
-#include "FSObject.h"
-#include "SpaceManager.h"
-#include "Journal.h"
+#include "Disk.h"
 
 using namespace std;
 
 int main() {
-    FSObject file("file.txt", false);
-    SpaceManager sm(512);
-    Journal journal;
+    Disk disk;
+    disk.touch("file.txt");
+    disk.ls();
+    disk.echo("file.txt", "hello");
+    disk.cat("file.txt");
     return 0;
 }
