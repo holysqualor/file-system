@@ -10,16 +10,27 @@ private:
     std::string name;
     uint8_t attributes;
 
+protected:
+    FSObject(const std::string& name, uint8_t type);
+
 public:
-    FSObject(const std::string& name, uint8_t attributes);
-    FSObject(const std::string& name, bool type);
+    static const uint8_t
+        DIRECTORY = 0b10000000,
+        FILE = 0b00000000,
+        HIDDEN = 0b00001000,
+        READ = 0b00000100,
+        WRITE = 0b00000010,
+        EXECUTE = 0b00000001;
+
+    virtual ~FSObject() = default;
     const std::string& getName() const;
-    bool isDir();
-    bool isHidden();
-    bool canRead();
-    bool canWrite();
-    bool canExecute();
-    void chmod(bool r, bool w, bool x);
+    bool isDirectory() const;
+    bool isFile() const;
+    bool isHidden() const;
+    bool canRead() const;
+    bool canWrite() const;
+    bool canExecute() const;
+    void chmod(uint8_t mode);
     void rename(const std::string& name);
 };
 
