@@ -1,8 +1,21 @@
 #include "Directory.h"
 
-Directory::Directory(const std::string& name, Directory *parent) : FSObject(name, FSObject::DIRECTORY), parent{parent} {}
+Directory::Directory(const std::string& name, Directory *parent) : FSObject(name, FSObject::DIRECTORY | FSObject::READ | FSObject::WRITE | FSObject::EXECUTE), parent{parent} {}
 
 Directory::Directory() : Directory("", NULL) {}
+
+Directory::Directory(const Directory& other) : FSObject(other), parent{NULL} {
+    for(FSObject *obj : other.child) {
+        FSObject *cp = obj->clone();
+        if(cp->isDirectory())
+            ((Directory*)cp)->parent = this;
+        child.push_back(cp);
+    }
+}
+
+FSObject *Directory::clone() {
+    return new Directory(*this);
+}
 
 Directory::~Directory() {
     for(FSObject *obj : child)
@@ -68,3 +81,11 @@ void Directory::rename(const std::string& oldName, const std::string& newName) {
     if(obj)
         obj->rename(newName);
 }
+
+void Directory::pwd() {
+    if(!parent)
+        return;
+    parent->pwd();
+    std::cout << "/" << getName();
+}
+

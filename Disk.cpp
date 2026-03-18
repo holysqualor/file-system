@@ -2,6 +2,25 @@
 
 Disk::Disk() : root{new Directory()}, current{root} {}
 
+Disk::Disk(const Disk& other) {
+    root = new Directory(*other.root);
+    current = root;
+}
+
+Disk::Disk(Disk&& other)  {
+    root = other.root;
+    current = other.current;
+    other.root = NULL;
+    other.current = NULL;
+}
+
+Disk& Disk::operator=(const Disk& other) {
+    delete root;
+    root = new Directory(*other.root);
+    current = root;
+    return *this;
+}
+
 Disk::~Disk() {
     delete root;
 }
@@ -12,6 +31,10 @@ void Disk::touch(const std::string& name) {
 
 void Disk::mkdir(const std::string& name) {
     current->addDirectory(name);
+}
+
+void Disk::rm(const std::string& name) {
+    current->rm(name);
 }
 
 void Disk::cd(const std::string& name) {
@@ -39,4 +62,8 @@ void Disk::cat(const std::string& name) {
 
 void Disk::ls() const {
     current->ls();
+}
+
+void Disk::pwd() const {
+    current->pwd();
 }

@@ -23,6 +23,7 @@ public:
         EXECUTE = 0b00000001;
 
     virtual ~FSObject() = default;
+    virtual FSObject *clone() = 0;
     const std::string& getName() const;
     bool isDirectory() const;
     bool isFile() const;

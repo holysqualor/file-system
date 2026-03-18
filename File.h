@@ -12,23 +12,19 @@ private:
     std::string content;
 
 public:
+    File(const std::string& name, const std::string& content);
     File(const std::string& name);
+    File(const File& other) = default;
     ~File() = default;
+
+    FSObject *clone() override;
 
     std::string read();
     void write(const std::string& name);
 
-    /*friend std::ostream& operator<<(std::ostream& os, const File& file) {
-        if(file.canRead())
-            os << file.content;
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream& os, const File& file);
 
-    friend std::istream& operator>>(std::istream& is, File& file) {
-        if(file.canWrite())
-            is >> file.content;
-        return is;
-    }*/
+    friend std::istream& operator>>(std::istream& is, File& file);
 };
 
 #endif // FILE_H_INCLUDED

@@ -5,10 +5,13 @@
 using namespace std;
 
 int main() {
-    Disk disk;
-    disk.touch("file.txt");
-    disk.ls();
-    disk.echo("file.txt", "hello");
-    disk.cat("file.txt");
+    Disk A;
+    A.touch("file.txt");
+    Disk B = A;
+    A.rm("file.txt");
+    cout << "A" << endl;
+    A.ls();
+    cout << "B" << endl;
+    B.ls();
     return 0;
 }

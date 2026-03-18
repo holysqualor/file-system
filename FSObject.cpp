@@ -1,6 +1,6 @@
 #include "FSObject.h"
 
-FSObject::FSObject(const std::string& name, uint8_t type) : name{name}, attributes{(uint8_t)((type & DIRECTORY) | READ | WRITE | EXECUTE)} {}
+FSObject::FSObject(const std::string& name, uint8_t attributes) : name{name}, attributes{attributes} {}
 
 const std::string& FSObject::getName() const {
     return name;
