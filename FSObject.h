@@ -8,30 +8,28 @@
 class FSObject {
 private:
     std::string name;
-    uint8_t attributes;
+    uint8_t mode;
 
 protected:
-    FSObject(const std::string& name, uint8_t type);
+    FSObject(const std::string& name, uint8_t mode);
 
 public:
-    static const uint8_t
-        DIRECTORY = 0b10000000,
-        FILE = 0b00000000,
-        HIDDEN = 0b00001000,
-        READ = 0b00000100,
-        WRITE = 0b00000010,
-        EXECUTE = 0b00000001;
+    static const uint8_t HIDDEN = 0b1000, READ = 0b0100, WRITE = 0b0010, EXECUTE = 0b0001;
 
     virtual ~FSObject() = default;
     virtual FSObject *clone() = 0;
-    const std::string& getName() const;
-    bool isDirectory() const;
-    bool isFile() const;
-    bool isHidden() const;
-    bool canRead() const;
-    bool canWrite() const;
-    bool canExecute() const;
-    void chmod(uint8_t mode);
+    virtual bool isDirectory() const = 0;
+    virtual bool isFile() const = 0;
+
+    std::string getType() const;
+
+    virtual const std::string& getName() const final;
+    virtual bool isHidden() const final;
+    virtual bool canRead() const final;
+    virtual bool canWrite() const final;
+    virtual bool canExecute() const final;
+    virtual void chmod(uint8_t mode) final;
+
     void rename(const std::string& name);
 };
 

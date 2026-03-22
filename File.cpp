@@ -1,11 +1,23 @@
 #include "File.h"
 #include "FSObject.h"
 
-File::File(const std::string& name, const std::string& content) : FSObject(name, FSObject::FILE | FSObject::READ | FSObject::WRITE | FSObject::EXECUTE), content{content} {}
+File::File(const std::string& name, const std::string& content) : FSObject(name, FSObject::READ | FSObject::WRITE | FSObject::EXECUTE), content{content} {}
 File::File(const std::string& name) : File(name, "") {}
 
 FSObject *File::clone() {
     return new File(*this);
+}
+
+bool File::isDirectory() const {
+    return false;
+}
+
+bool File::isFile() const {
+    return true;
+}
+
+std::string File::getType() const {
+    return "File";
 }
 
 std::string File::read() {

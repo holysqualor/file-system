@@ -1,6 +1,6 @@
 #include "Directory.h"
 
-Directory::Directory(const std::string& name, Directory *parent) : FSObject(name, FSObject::DIRECTORY | FSObject::READ | FSObject::WRITE | FSObject::EXECUTE), parent{parent} {}
+Directory::Directory(const std::string& name, Directory *parent) : FSObject(name, FSObject::READ | FSObject::WRITE | FSObject::EXECUTE), parent{parent} {}
 
 Directory::Directory() : Directory("", NULL) {}
 
@@ -13,13 +13,25 @@ Directory::Directory(const Directory& other) : FSObject(other), parent{NULL} {
     }
 }
 
+Directory::~Directory() {
+    for(FSObject *obj : child)
+        delete obj;
+}
+
 FSObject *Directory::clone() {
     return new Directory(*this);
 }
 
-Directory::~Directory() {
-    for(FSObject *obj : child)
-        delete obj;
+bool Directory::isDirectory() const {
+    return true;
+}
+
+bool Directory::isFile() const {
+    return false;
+}
+
+std::string Directory::getType() const {
+    return "Directory";
 }
 
 FSObject *Directory::find(const std::string& name) {

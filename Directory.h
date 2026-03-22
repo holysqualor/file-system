@@ -21,6 +21,10 @@ public:
     ~Directory();
 
     FSObject *clone() override;
+    bool isDirectory() const override;
+    bool isFile() const override;
+
+    std::string getType() const;
 
     File *getFile(const std::string& name);
     Directory *getDirectory(const std::string& name);

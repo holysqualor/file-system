@@ -18,6 +18,10 @@ public:
     ~File() = default;
 
     FSObject *clone() override;
+    bool isDirectory() const override;
+    bool isFile() const override;
+
+    std::string getType() const;
 
     std::string read();
     void write(const std::string& name);

@@ -5,13 +5,13 @@
 using namespace std;
 
 int main() {
-    Disk A;
-    A.touch("file.txt");
-    Disk B = A;
-    A.rm("file.txt");
-    cout << "A" << endl;
-    A.ls();
-    cout << "B" << endl;
-    B.ls();
+    FSObject *dir = new Directory();
+    cout << dir->getType() << endl;
+    cout << (dir->isDirectory() ? "Directory" : "File") << endl;
+    delete dir;
+
+    File file("file");
+    FSObject &obj = file;
+    cout << (obj.isDirectory() ? "Directory" : "File") << endl;
     return 0;
 }
