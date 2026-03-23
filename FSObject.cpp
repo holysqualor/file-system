@@ -33,3 +33,8 @@ void FSObject::chmod(uint8_t mode) {
 void FSObject::rename(const std::string& name) {
     this->name = name;
 }
+
+void FSObject::display() const {
+    if(!isHidden())
+        std::cout << (isDirectory() ? "<dir>" : "") << '\t' << (canRead() ? 'r' : '-') << (canWrite() ? 'w' : '-') << (canExecute() ? 'x' : '-') << '\t' << getName() << std::endl;
+}

@@ -20,7 +20,7 @@ std::string File::getType() const {
     return "File";
 }
 
-std::string File::read() {
+const std::string &File::read() const {
     return content;
 }
 

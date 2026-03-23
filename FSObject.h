@@ -29,8 +29,8 @@ public:
     virtual bool canWrite() const final;
     virtual bool canExecute() const final;
     virtual void chmod(uint8_t mode) final;
-
-    void rename(const std::string& name);
+    virtual void display() const final;
+    virtual void rename(const std::string& name) final;
 };
 
 #endif // FSOBJECT_H_INCLUDED

@@ -37,6 +37,8 @@ std::string Directory::getType() const {
 FSObject *Directory::find(const std::string& name) {
     if(name == "..")
         return parent;
+    if(name == ".")
+        return this;
     for(FSObject *obj : child) {
         if(obj->getName() == name)
             return obj;
@@ -55,14 +57,14 @@ Directory *Directory::getDirectory(const std::string& name) {
 }
 
 void Directory::addFile(const std::string& name) {
-    if(find(name))
-        return;
     child.push_back(new File(name));
 }
 
+void Directory::addFile(const std::string& name, const std::string& content) {
+    child.push_back(new File(name, content));
+}
+
 void Directory::addDirectory(const std::string& name) {
-    if(find(name))
-        return;
     child.push_back(new Directory(name, this));
 }
 
@@ -79,25 +81,39 @@ void Directory::rm(const std::string& name) {
     }
 }
 
-void Directory::ls() {
-    for(FSObject *obj : child) {
-        if(!obj->isHidden()) {
-            std::cout << (obj->isDirectory() ? "<dir>" : "") << '\t' << (obj->canRead() ? 'r' : '-')
-             << (obj->canWrite() ? 'w' : '-') << (obj->canExecute() ? 'x' : '-') << '\t' << obj->getName() << std::endl;
+FSObject *Directory::pop(const std::string& name) {
+    for(auto it = child.begin(); it != child.end(); it++) {
+        FSObject *obj = *it;
+        if(obj->getName() == name) {
+            child.erase(it);
+            return obj;
         }
     }
+    return NULL;
 }
 
-void Directory::rename(const std::string& oldName, const std::string& newName) {
-    FSObject *obj = find(oldName);
-    if(obj)
-        obj->rename(newName);
+void Directory::push(FSObject *obj) {
+    if(obj->isDirectory())
+        ((Directory*)obj)->parent = this;
+    child.push_back(obj);
+}
+
+void Directory::ls() {
+    for(FSObject *obj : child)
+        obj->display();
 }
 
 void Directory::pwd() {
-    if(!parent)
-        return;
-    parent->pwd();
-    std::cout << "/" << getName();
+    if(parent)
+        parent->pwd();
+    std::cout << getName() << "/";
+}
+
+bool Directory::isindp(Directory *other) {
+    for(Directory *dir = this; dir; dir = dir->parent) {
+        if(dir == other)
+            return false;
+    }
+    return true;
 }
 

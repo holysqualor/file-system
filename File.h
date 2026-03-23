@@ -23,7 +23,7 @@ public:
 
     std::string getType() const;
 
-    std::string read();
+    const std::string &read() const;
     void write(const std::string& name);
 
     friend std::ostream& operator<<(std::ostream& os, const File& file);
