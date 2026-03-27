@@ -1,7 +1,8 @@
 #include "File.h"
 #include "FSObject.h"
 
-File::File(const std::string& name, const std::string& content) : FSObject(name, FSObject::READ | FSObject::WRITE | FSObject::EXECUTE), content{content} {}
+File::File(const std::string& name, uint8_t mode, const std::string& content) : FSObject(name, mode), content{content} {}
+File::File(const std::string& name, const std::string& content) : File(name, FSObject::READ | FSObject::WRITE | FSObject::EXECUTE, content) {}
 File::File(const std::string& name) : File(name, "") {}
 
 FSObject *File::clone() {
@@ -16,8 +17,9 @@ bool File::isFile() const {
     return true;
 }
 
-std::string File::getType() const {
-    return "File";
+void File::save(std::ofstream &dest) {
+    FSObject::save(dest);
+    writestr(dest, content);
 }
 
 const std::string &File::read() const {
@@ -26,14 +28,4 @@ const std::string &File::read() const {
 
 void File::write(const std::string& content) {
     this->content = content;
-}
-
-std::ostream& operator<<(std::ostream& os, const File& file) {
-    os << file.content;
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, File& file) {
-    is >> file.content;
-    return is;
 }

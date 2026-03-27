@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstdint>
+#include <fstream>
 
 class FSObject {
 private:
@@ -12,19 +13,21 @@ private:
 
 protected:
     FSObject(const std::string& name, uint8_t mode);
+    static void readstr(std::ifstream &src, std::string &str);
+    static void writestr(std::ofstream &dest, std::string &str);
 
 public:
-    static const uint8_t HIDDEN = 0b1000, READ = 0b0100, WRITE = 0b0010, EXECUTE = 0b0001;
+    static const uint8_t READ = 0b0100, WRITE = 0b0010, EXECUTE = 0b0001;
+
+    static FSObject *load(std::ifstream &src);
 
     virtual ~FSObject() = default;
     virtual FSObject *clone() = 0;
     virtual bool isDirectory() const = 0;
     virtual bool isFile() const = 0;
-
-    std::string getType() const;
+    virtual void save(std::ofstream &dest);
 
     virtual const std::string& getName() const final;
-    virtual bool isHidden() const final;
     virtual bool canRead() const final;
     virtual bool canWrite() const final;
     virtual bool canExecute() const final;

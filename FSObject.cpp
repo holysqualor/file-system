@@ -1,17 +1,51 @@
 #include "FSObject.h"
+#include "File.h"
+#include "Directory.h"
 
 FSObject::FSObject(const std::string& name, uint8_t mode) : name{name}, mode{mode} {}
 
+void FSObject::readstr(std::ifstream &src, std::string &str) {
+    size_t length = 0;
+    src.read((char*)&length, sizeof(length));
+    if(length) {
+        str.resize(length);
+        src.read(&str[0], length);
+    }
+}
+
+void FSObject::writestr(std::ofstream &dest, std::string &str) {
+    size_t length = str.length();
+    dest.write((char*)&length, sizeof(length));
+    if(length)
+        dest.write(&str[0], length);
+}
+
+FSObject *FSObject::load(std::ifstream &src) {
+    std::string name;
+    readstr(src, name);
+    uint8_t mode = 0;
+    src.read((char*)&mode, sizeof(mode));
+    if((mode & 0b1000) == 0) {
+        std::string content;
+        readstr(src, content);
+        return new File(name, mode, content);
+    }
+    size_t nchild = 0;
+    src.read((char*)&nchild, sizeof(nchild));
+    Directory *directory = new Directory(name, mode);
+    for(size_t i = 0; i < nchild; i++)
+        directory->add(load(src));
+    return directory;
+}
+
+void FSObject::save(std::ofstream &dest) {
+    writestr(dest, name);
+    mode = isFile() ? (mode & 0b0111) : (mode | 0b1000);
+    dest.write((char*)&mode, sizeof(mode));
+}
+
 const std::string& FSObject::getName() const {
     return name;
-}
-
-std::string FSObject::getType() const {
-    return "Undefined";
-}
-
-bool FSObject::isHidden() const {
-    return (mode & HIDDEN) > 0;
 }
 
 bool FSObject::canRead() const {
@@ -35,6 +69,6 @@ void FSObject::rename(const std::string& name) {
 }
 
 void FSObject::display() const {
-    if(!isHidden())
-        std::cout << (isDirectory() ? "<dir>" : "") << '\t' << (canRead() ? 'r' : '-') << (canWrite() ? 'w' : '-') << (canExecute() ? 'x' : '-') << '\t' << getName() << std::endl;
+    std::cout << (isDirectory() ? 'd' : '-') << (isFile() ? 'f' : '-') << (canRead() ? 'r' : '-')
+    << (canWrite() ? 'w' : '-') << (canExecute() ? 'x' : '-') << '\t' << name << std::endl;
 }

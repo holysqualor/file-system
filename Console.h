@@ -5,17 +5,21 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <vector>
 
 class Console {
 private:
-    static Disk disk;
-    static std::vector<std::string> args;
+    struct Command {
+        const char *name;
+        Disk::status (Disk::*run)(std::vector<std::string> &args);
+    };
+
     static const char *error[];
+    static std::vector<std::string> args;
+    static const Command commands[];
 
 public:
-    static bool run();
+    static bool process(Disk &disk);
 };
 
 #endif // CONSOLE_H_INCLUDED

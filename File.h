@@ -12,6 +12,7 @@ private:
     std::string content;
 
 public:
+    File(const std::string& name, uint8_t mode, const std::string& content);
     File(const std::string& name, const std::string& content);
     File(const std::string& name);
     File(const File& other) = default;
@@ -20,15 +21,10 @@ public:
     FSObject *clone() override;
     bool isDirectory() const override;
     bool isFile() const override;
-
-    std::string getType() const;
+    void save(std::ofstream &dest) override;
 
     const std::string &read() const;
     void write(const std::string& name);
-
-    friend std::ostream& operator<<(std::ostream& os, const File& file);
-
-    friend std::istream& operator>>(std::istream& is, File& file);
 };
 
 #endif // FILE_H_INCLUDED

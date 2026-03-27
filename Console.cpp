@@ -1,20 +1,37 @@
 #include "Console.h"
 
-Disk Console::disk;
+#include <sstream>
+
 std::vector<std::string> Console::args;
 const char *Console::error[] = {
     "",
-    "Too few arguments",
+    "Unknown command",
+    "Missing arguments",
     "Too many arguments",
     "Bad path",
     "An object with this name already exists",
     "Object not found",
     "Access denied",
     "Invalid argument",
-    "The operation cannot be performed"
+    "The operation cannot be performed",
+    "File required",
+    "Directory required"
+};
+const Console::Command Console::commands[] = {
+    {"touch", &Disk::touch},
+    {"mkdir", &Disk::mkdir},
+    {"rm", &Disk::rm},
+    {"cd", &Disk::cd},
+    {"ls", &Disk::ls},
+    {"chmod", &Disk::chmod},
+    {"cat", &Disk::cat},
+    {"echo", &Disk::echo},
+    {"mv", &Disk::mv},
+    {"cp", &Disk::cp},
+    {"logout", &Disk::logout}
 };
 
-bool Console::run() {
+bool Console::process(Disk &disk) {
     disk.banner();
     std::string input, arg, cmd;
     std::getline(std::cin, input);
@@ -26,43 +43,23 @@ bool Console::run() {
         args.clear();
         while(std::getline(stream, arg, ' ') && arg != "&&")
             args.push_back(arg);
-        Disk::status status = Disk::SUCCESS;
+        Disk::status status = Disk::UNKNOWN_COMMAND;
         if(cmd == "poweroff") {
             if(!args.empty())
                 status = Disk::TOO_MANY_ARGUMENTS;
             else return false;
-        }
-        else if(cmd == "touch")
-            status = disk.touch(args);
-        else if(cmd == "mkdir")
-            status = disk.mkdir(args);
-        else if(cmd == "rm")
-            status = disk.rm(args);
-        else if(cmd == "cd")
-            status = disk.cd(args);
-        else if(cmd == "ls")
-            status = disk.ls(args);
-        else if(cmd == "pwd")
-            status = disk.pwd(args);
-        else if(cmd == "chmod")
-            status = disk.chmod(args);
-        else if(cmd == "cat")
-            status = disk.cat(args);
-        else if(cmd == "echo")
-            status = disk.echo(args);
-        else if(cmd == "mv")
-            status = disk.mv(args);
-        else if(cmd == "logout")
-            status = disk.logout(args);
-        else {
-            std::cout << "bash: " << cmd << ": Unknown command" << std::endl;
-            break;
+        } else {
+            for(const Command &command : commands) {
+                if(cmd == command.name) {
+                    status = (disk.*command.run)(args);
+                    break;
+                }
+            }
         }
         if(status) {
             std::cout << "bash: " << cmd << ": " << error[status] << std::endl;
             break;
         }
     }
-
     return true;
 }
